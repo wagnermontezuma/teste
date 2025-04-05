@@ -1,132 +1,162 @@
-# API REST para Testes QA com MCP-Playwright
+# API de Testes e Análise UX/UI
 
-API RESTful para automatização de testes de QA em tempo real utilizando o servidor MCP-Playwright.
+API REST para automação de testes e análise de interfaces web, com integração Figma para geração de designs.
 
-## Funcionalidades
+## 🚀 Endpoints
 
-- Teste automatizado de URLs via API REST
-- Validação de status HTTP
-- Verificação de elementos básicos (title, header, footer, etc.)
-- Teste de links principais
-- Capturas de tela para erros encontrados
-- Validação de entrada de URLs
-- Configuração de resolução personalizada
-
-## Estrutura do Projeto
-
+### 1. Testar URL
+```http
+POST /testar-url
 ```
-/api/
-  index.ts               # Ponto de entrada da API
-  routes/testar-url.ts   # Rotas do endpoint /testar-url
-/tests/
-  validarPagina.ts       # Funções de teste com Playwright
-/evidencias-erros/        # Diretório para capturas de tela de erros
-/logs/                   # Logs da aplicação
-```
-
-## Requisitos
-
-- Node.js 14+
-- Express.js
-- MCP-Playwright configurado no ambiente
-
-## Instalação
-
-```bash
-# Instalar dependências
-npm install
-
-# Iniciar em modo desenvolvimento
-npm run dev
-
-# Construir para produção
-npm run build
-
-# Iniciar em modo produção
-npm start
-```
-
-## Uso da API
-
-### Endpoint: `POST /testar-url`
 
 **Payload:**
-
 ```json
 {
-  "url": "https://www.exemplo.com.br/",
-  "resolucao": "1920x1080"  // Opcional
+  "url": "https://exemplo.com"
 }
 ```
 
 **Resposta:**
-
 ```json
 {
-  "status": "success",
-  "tempo_execucao": "2.3s",
-  "url": "https://www.exemplo.com.br/",
-  "resolucao": "1920x1080",
-  "erros": [],
-  "evidencias": []
+  "status": "ok",
+  "timestamp": "2025-04-04T22:59:27.324Z",
+  "url": "https://exemplo.com",
+  "tempoResposta": "364ms",
+  "elementosEncontrados": [
+    "Header",
+    "Footer",
+    "Main content"
+  ],
+  "elementosNaoEncontrados": [
+    "Title",
+    "Navigation menu"
+  ]
 }
 ```
 
-**Exemplo de Erro:**
+### 2. Análise UX/UI
+```http
+POST /analise-ux-ui
+```
 
+**Payload:**
 ```json
 {
-  "status": "fail",
-  "tempo_execucao": "1.8s",
-  "url": "https://www.exemplo.com.br/pagina-nao-existe",
-  "resolucao": "1920x1080",
-  "erros": ["Página não retornou status 200", "Elemento Título da página (title) não encontrado"],
-  "evidencias": ["evidencias-erros/erro-status-20250404-153245.png", "evidencias-erros/elemento-ausente-title-20250404-153246.png"]
+  "url": "https://exemplo.com"
 }
 ```
 
-## Exemplos de Uso
-
-### Teste Básico
-
-```bash
-curl -X POST http://localhost:3000/testar-url \
-  -H "Content-Type: application/json" \
-  -d '{"url": "https://www.exemplo.com.br/"}'
+**Resposta:**
+```json
+{
+  "status": "ok",
+  "notaGeral": 6.0,
+  "problemasDetectados": [
+    "Missing main title (h1)",
+    "Absence of a main navigation menu",
+    "Form field without label"
+  ],
+  "screenshots": {
+    "desktop": "/evidencias-uxui/desktop.png",
+    "mobile": "/evidencias-uxui/mobile.png"
+  },
+  "tempoExecucao": "5.4s"
+}
 ```
 
-### Teste com Resolução Personalizada
-
-```bash
-curl -X POST http://localhost:3000/testar-url \
-  -H "Content-Type: application/json" \
-  -d '{"url": "https://www.exemplo.com.br/", "resolucao": "375x812"}'
+### 3. Criar Design
+```http
+POST /criar-design
 ```
 
-## Validações
+**Payload:**
+```json
+{
+  "prompt": "Descrição do design desejado em linguagem natural"
+}
+```
 
-- URL deve ser válida e incluir protocolo (http/https)
-- Resolução deve seguir o formato widthxheight (ex: 1920x1080)
-- Limites de resolução: min 320x240, max 3840x2160
+**Resposta:**
+```json
+{
+  "status": "ok",
+  "descricao": "Design criado com sucesso incluindo: Header, Home page, etc",
+  "figma_file_url": "https://www.figma.com/file/..."
+}
+```
 
-## Logs
+## 🛠️ Tecnologias
 
-Os logs são armazenados em:
-- `logs/combined.log` - Todos os logs
-- `logs/error.log` - Apenas erros
+- Node.js
+- Express
+- TypeScript
+- Playwright
+- Winston (Logs)
+- Figma API
 
-## Desenvolvimento
+## ⚙️ Configuração
 
+1. Clone o repositório
 ```bash
-# Executar testes
-npm test
+git clone https://github.com/wagnermontezuma/teste.git
+```
 
-# Iniciar em modo desenvolvimento com recarga automática
+2. Instale as dependências
+```bash
+npm install
+```
+
+3. Configure as variáveis de ambiente (.env)
+```env
+FIGMA_FILE_KEY=seu_token_aqui
+```
+
+4. Execute o servidor
+```bash
 npm run dev
 ```
 
-## Notas
+## 📁 Estrutura do Projeto
 
-- Esta API utiliza o servidor MCP-Playwright para execução dos testes
-- As capturas de tela são armazenadas em `evidencias-erros/` com timestamp
-- Em ambientes de produção, configure variáveis de ambiente para porta, etc. 
+```
+├── api/
+│   ├── routes/
+│   │   ├── testar-url.ts
+│   │   ├── analise-ux-ui.ts
+│   │   └── criar-design.ts
+│   ├── middleware/
+│   │   └── validacao.ts
+│   └── index.ts
+├── services/
+│   └── figmaService.ts
+├── config/
+│   └── logger.ts
+├── tests/
+│   └── uxui/
+│       └── avaliarLayout.ts
+└── evidencias-uxui/
+    ├── desktop.png
+    └── mobile.png
+```
+
+## 📝 Logs
+
+Os logs são armazenados em:
+- `logs/error.log`: Erros e exceções
+- `logs/combined.log`: Todos os logs
+
+## 🔒 Segurança
+
+- Validação de URLs
+- Sanitização de inputs
+- Tratamento de erros
+- Logs estruturados
+
+## 🚧 Roadmap
+
+- [ ] Integração com ferramentas de acessibilidade
+- [ ] Geração de relatórios em PDF
+- [ ] Dashboard de análises
+- [ ] Histórico de testes
+- [ ] Integração com CI/CD 

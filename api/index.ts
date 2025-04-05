@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express, { Express } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -9,6 +10,7 @@ import fs from 'fs';
 // Importando rotas
 import testarUrlRouter from './routes/testar-url';
 import analiseUxUiRouter from './routes/analise-ux-ui';
+import criarDesignRouter from './routes/criar-design';
 
 // Importando middleware
 import { errorHandler, notFoundHandler, requestLogger } from './middleware/errorHandler';
@@ -76,6 +78,7 @@ app.get('/', (req, res) => {
 
 app.use('/testar-url', testarUrlRouter);
 app.use('/', analiseUxUiRouter);
+app.use('/', criarDesignRouter);
 
 // 404 para rotas não encontradas
 app.use(notFoundHandler);
