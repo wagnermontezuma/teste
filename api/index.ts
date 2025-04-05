@@ -8,6 +8,7 @@ import fs from 'fs';
 
 // Importando rotas
 import testarUrlRouter from './routes/testar-url';
+import analiseUxUiRouter from './routes/analise-ux-ui';
 
 // Importando middleware
 import { errorHandler, notFoundHandler, requestLogger } from './middleware/errorHandler';
@@ -74,6 +75,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/testar-url', testarUrlRouter);
+app.use('/', analiseUxUiRouter);
 
 // 404 para rotas não encontradas
 app.use(notFoundHandler);
